@@ -437,16 +437,18 @@ func (t *Tag) MarshalJSON() ([]byte, error) {
 
 func nullString(in []byte) []byte {
 	rv := bytes.Buffer{}
-	rv.WriteByte('"')
 	for _, b := range in {
 		if unicode.IsPrint(rune(b)) {
 			rv.WriteByte(b)
 		}
 	}
-	rv.WriteByte('"')
 	rvb := rv.Bytes()
 	if utf8.Valid(rvb) {
-		return rvb
+		res, err := json.Marshal(string(rvb))
+		if err != nil {
+			return []byte(`""`)
+		}
+		return res
 	}
 	return []byte(`""`)
 }
